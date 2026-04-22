@@ -74,6 +74,7 @@ typedef enum {
     TagTinkerTextInputNewText = 0,
     TagTinkerTextInputKeepText = 1,
     TagTinkerTextInputRenameTarget = 2,
+    TagTinkerTextInputRawCommand = 3,
 } TagTinkerTextInputMode;
 
 /* Views */
@@ -238,6 +239,8 @@ typedef enum {
     TagTinkerTargetPushSyncedImage,
     TagTinkerTargetDeleteSyncedImages,
     TagTinkerTargetPingFlash,
+    TagTinkerTargetLedOff,
+    TagTinkerTargetRawCommand,
     TagTinkerTargetDeleteTag,
 } TagTinkerTargetActionItem;
 
