@@ -33,3 +33,7 @@ __pycache__/
 # OS garbage
 .DS_Store
 Desktop.ini
+
+#vscode/claude
+.claude
+.vscode
