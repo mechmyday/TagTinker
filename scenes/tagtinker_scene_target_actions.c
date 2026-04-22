@@ -90,6 +90,8 @@ void tagtinker_scene_target_actions_on_enter(void* ctx) {
     }
 
     submenu_add_item(app->submenu, "LED Test", TagTinkerTargetPingFlash, target_actions_cb, app);
+    submenu_add_item(app->submenu, "LED Off", TagTinkerTargetLedOff, target_actions_cb, app);
+    submenu_add_item(app->submenu, "Raw Command", TagTinkerTargetRawCommand, target_actions_cb, app);
     submenu_add_item(
         app->submenu, "Delete Saved Images", TagTinkerTargetDeleteSyncedImages, target_actions_cb, app);
     submenu_add_item(app->submenu, "Delete Tag", TagTinkerTargetDeleteTag, target_actions_cb, app);
@@ -133,9 +135,16 @@ bool tagtinker_scene_target_actions_on_event(void* ctx, SceneManagerEvent event)
             show_target_action_result(app, "Delete Images", result);
         }
         return true;
+    case TagTinkerTargetRawCommand:
+        scene_manager_set_scene_state(
+            app->scene_manager, TagTinkerSceneTextInput, TagTinkerTextInputRawCommand);
+        scene_manager_next_scene(app->scene_manager, TagTinkerSceneTextInput);
+        return true;
     case TagTinkerTargetPingFlash:
+    case TagTinkerTargetLedOff:
         {
             TagTinkerTarget* target = &app->targets[app->selected_target];
+            bool led_off = (event.event == TagTinkerTargetLedOff);
 
             app->frame_seq_count = 2;
             app->frame_sequence = malloc(sizeof(uint8_t*) * 2);
@@ -148,8 +157,10 @@ bool tagtinker_scene_target_actions_on_event(void* ctx, SceneManagerEvent event)
 
             app->frame_sequence[1] = malloc(TAGTINKER_MAX_FRAME_SIZE);
             const uint8_t blink_payload[6] = {0x06, 0xC9, 0x00, 0x00, 0x00, 0x00};
+            const uint8_t off_payload[6]   = {0x06, 0xC9, 0x00, 0x00, 0x00, 0x01};
             app->frame_lengths[1] = tagtinker_make_addressed_frame(
-                app->frame_sequence[1], target->plid, blink_payload, 6);
+                app->frame_sequence[1], target->plid,
+                led_off ? off_payload : blink_payload, 6);
             app->frame_repeats[1] = 100;
 
             memcpy(app->frame_buf, app->frame_sequence[0], app->frame_lengths[0]);
